@@ -58,10 +58,9 @@ Follow these steps to get started with FinWise:
 
 - 💻 **Frontend**: React.js / HTML / CSS
 - 🌐 **Backend**: Node.js / Express.js
-- 🗄️ **Database**: MongoDB / SQLite (depending on your setup)
+- 🗄️ **Database**: Supabase
 - 🔑 **Authentication**: JSON Web Tokens (JWT) for secure login/logout functionality
-- ☁️ **Deployment**: Docker / AWS / Vercel (optional, based on preference)
-
+- ☁️ **Deployment**: Vercel
 ## 📸 Screenshots
 
 Here are some screenshots showcasing the FinWise app:
@@ -94,7 +93,7 @@ We welcome contributions! Here's how you can contribute:
 
 ## 💬 Feedback
 
-Your feedback is valuable! If you have any suggestions, feature requests, or bugs to report, please [open an issue](https://github.com/yourusername/finwise/issues) or reach out to us.
+Your feedback is valuable! If you have any suggestions, feature requests, or bugs to report, please [open an issue](https://github.com/NisargPatel5563/finwise/issues) or reach out to us.
 
 ---
 
