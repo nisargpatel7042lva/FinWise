@@ -93,7 +93,7 @@ We welcome contributions! Here's how you can contribute:
 
 ## 💬 Feedback
 
-Your feedback is valuable! If you have any suggestions, feature requests, or bugs to report, please [open an issue](https://github.com/NisargPatel5563/finwise/issues) or reach out to us.
+Your feedback is valuable! If you have any suggestions, feature requests, or bugs to report, please [open an issue](https://github.com/nisargpatel7042lva/finwise/issues) or reach out to us.
 
 ---
 
