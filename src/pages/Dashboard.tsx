@@ -3,9 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Plus, 
   LogOut, 
+  Settings, 
   Eye, 
   AlertCircle, 
   X, 
+  Calendar,
+  Tag,
+  FileText, 
+  Receipt,
   ChevronLeft,
   ChevronRight,
   ZoomIn,
@@ -18,8 +23,11 @@ import {
   ShoppingBag,
   Gamepad2,
   MoreHorizontal,
+  PiggyBank,
+  TrendingDown,
   Wallet,
-  Edit2
+  Edit2,
+  Menu
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
@@ -67,6 +75,7 @@ export default function Dashboard() {
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [newGoal, setNewGoal] = useState('');
   const [isUpdatingGoal, setIsUpdatingGoal] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
 
@@ -82,6 +91,7 @@ export default function Dashboard() {
       const { data, error } = await supabase
         .from('expenses')
         .select('*')
+        .eq('user_id', user?.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -165,13 +175,16 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6 sm:mb-8">
           <div className="flex items-center space-x-4">
-            <Wallet className="h-8 w-8 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900">FinWise</h1>
+            <Wallet className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">FinWise</h1>
           </div>
-          <div className="flex items-center space-x-4">
+          
+          {/* Desktop Navigation */}
+          <div className="hidden sm:flex items-center space-x-4">
             <button
               onClick={() => navigate('/add-expense')}
               className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
@@ -187,12 +200,46 @@ export default function Dashboard() {
               <span>Logout</span>
             </button>
           </div>
+
+          {/* Mobile Menu Button */}
+          <div className="sm:hidden">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 text-gray-600 hover:text-gray-900"
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Monthly Goal</h2>
+        {/* Mobile Navigation Menu */}
+        {isMobileMenuOpen && (
+          <div className="sm:hidden mb-6 bg-white rounded-lg shadow-md p-4 space-y-4">
+            <button
+              onClick={() => {
+                navigate('/add-expense');
+                setIsMobileMenuOpen(false);
+              }}
+              className="w-full flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            >
+              <Plus className="h-5 w-5" />
+              <span>Add Expense</span>
+            </button>
+            <button
+              onClick={() => signOut()}
+              className="w-full flex items-center justify-center space-x-2 text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg px-4 py-2"
+            >
+              <LogOut className="h-5 w-5" />
+              <span>Logout</span>
+            </button>
+          </div>
+        )}
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
+            <div className="flex items-center justify-between mb-2 sm:mb-4">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Monthly Goal</h2>
               <button
                 onClick={() => {
                   setNewGoal(profile?.savings_goal.toString() || '');
@@ -200,36 +247,37 @@ export default function Dashboard() {
                 }}
                 className="text-blue-600 hover:text-blue-700 transform hover:scale-110 transition-transform duration-200"
               >
-                <Edit2 className="h-5 w-5" />
+                <Edit2 className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
             </div>
-            <p className="text-3xl font-bold text-gray-900">₹{profile?.savings_goal.toLocaleString()}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-gray-900">₹{profile?.savings_goal.toLocaleString()}</p>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Total Expenses</h2>
-            <p className="text-3xl font-bold text-red-600">₹{totalExpenses.toLocaleString()}</p>
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-4">Total Expenses</h2>
+            <p className="text-2xl sm:text-3xl font-bold text-red-600">₹{totalExpenses.toLocaleString()}</p>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Remaining Budget</h2>
-            <p className={`text-3xl font-bold ${remainingBudget >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-4">Remaining Budget</h2>
+            <p className={`text-2xl sm:text-3xl font-bold ${remainingBudget >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               ₹{remainingBudget.toLocaleString()}
             </p>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Budget Progress</h2>
-          <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
+        {/* Budget Progress */}
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Budget Progress</h2>
+          <div className="w-full bg-gray-200 rounded-full h-3 sm:h-4 mb-2">
             <div
-              className={`h-4 rounded-full ${
+              className={`h-3 sm:h-4 rounded-full ${
                 progressPercentage > 100 ? 'bg-red-600' : 'bg-blue-600'
               }`}
               style={{ width: `${Math.min(progressPercentage, 100)}%` }}
             ></div>
           </div>
-          <p className="text-sm text-gray-600">
+          <p className="text-xs sm:text-sm text-gray-600">
             {progressPercentage > 100 ? (
               <span className="text-red-600">
                 <AlertCircle className="inline h-4 w-4 mr-1" />
@@ -241,27 +289,28 @@ export default function Dashboard() {
           </p>
         </div>
 
+        {/* Recent Expenses */}
         <div className="bg-white rounded-lg shadow-md">
-          <div className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Expenses</h2>
-            <div className="space-y-4">
+          <div className="p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Recent Expenses</h2>
+            <div className="space-y-3 sm:space-y-4">
               {expenses.map((expense) => (
                 <div
                   key={expense.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
                 >
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-3 sm:space-x-4 mb-2 sm:mb-0">
                     <div className="p-2 bg-blue-100 rounded-lg">
                       {getCategoryIcon(expense.category)}
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900">{expense.description || expense.category}</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-xs sm:text-sm text-gray-600">
                         {new Date(expense.created_at).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center justify-between sm:justify-end sm:space-x-4 mt-2 sm:mt-0">
                     <p className="font-semibold text-gray-900">₹{expense.amount.toLocaleString()}</p>
                     {expense.bill_images && expense.bill_images.length > 0 && (
                       <button
@@ -283,36 +332,37 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Bill Image Modal */}
         {selectedExpense && (
-          <div className={`fixed inset-0 bg-black ${isFullscreen ? '' : 'bg-opacity-50'} flex items-center justify-center z-50`}>
-            <div className={`bg-white rounded-lg ${isFullscreen ? 'w-full h-full' : 'w-full max-w-4xl p-6'}`}>
-              <div className="flex justify-between items-center mb-6 p-4">
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div className={`bg-white rounded-lg ${isFullscreen ? 'fixed inset-0' : 'w-full max-w-4xl'}`}>
+              <div className="flex justify-between items-center p-4">
                 <div className="flex items-center">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
                     Bill Images ({currentImageIndex + 1}/{selectedExpense.bill_images?.length})
                   </h2>
                 </div>
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2 sm:space-x-4">
                   <button
                     onClick={handleZoomOut}
-                    className="text-gray-600 hover:text-gray-900 p-2"
+                    className="text-gray-600 hover:text-gray-900 p-1 sm:p-2"
                     disabled={zoomLevel <= 0.5}
                   >
-                    <ZoomOut className="h-5 w-5" />
+                    <ZoomOut className="h-4 w-4 sm:h-5 sm:w-5" />
                   </button>
-                  <span className="text-gray-600">{Math.round(zoomLevel * 100)}%</span>
+                  <span className="text-xs sm:text-sm text-gray-600">{Math.round(zoomLevel * 100)}%</span>
                   <button
                     onClick={handleZoomIn}
-                    className="text-gray-600 hover:text-gray-900 p-2"
+                    className="text-gray-600 hover:text-gray-900 p-1 sm:p-2"
                     disabled={zoomLevel >= 3}
                   >
-                    <ZoomIn className="h-5 w-5" />
+                    <ZoomIn className="h-4 w-4 sm:h-5 sm:w-5" />
                   </button>
                   <button
                     onClick={toggleFullscreen}
-                    className="text-gray-600 hover:text-gray-900 p-2"
+                    className="text-gray-600 hover:text-gray-900 p-1 sm:p-2"
                   >
-                    {isFullscreen ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
+                    {isFullscreen ? <Minimize2 className="h-4 w-4 sm:h-5 sm:w-5" /> : <Maximize2 className="h-4 w-4 sm:h-5 sm:w-5" />}
                   </button>
                   <button
                     onClick={() => {
@@ -323,17 +373,17 @@ export default function Dashboard() {
                     }}
                     className="text-gray-500 hover:text-gray-700"
                   >
-                    <X className="h-6 w-6" />
+                    <X className="h-5 w-5 sm:h-6 sm:w-6" />
                   </button>
                 </div>
               </div>
 
-              <div className={`relative ${isFullscreen ? 'h-[calc(100vh-100px)]' : 'h-[60vh]'} overflow-hidden`}>
+              <div className={`relative ${isFullscreen ? 'h-[calc(100vh-80px)]' : 'h-[50vh] sm:h-[60vh]'} overflow-hidden`}>
                 {selectedExpense.bill_images && selectedExpense.bill_images.length > 0 && (
                   <>
                     {imageLoading && (
                       <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-600"></div>
                       </div>
                     )}
                     <img
@@ -347,15 +397,15 @@ export default function Dashboard() {
                       <>
                         <button
                           onClick={handlePrevImage}
-                          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100"
+                          className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-1 sm:p-2 shadow-lg hover:bg-gray-100"
                         >
-                          <ChevronLeft className="h-6 w-6 text-gray-600" />
+                          <ChevronLeft className="h-4 w-4 sm:h-6 sm:w-6 text-gray-600" />
                         </button>
                         <button
                           onClick={handleNextImage}
-                          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100"
+                          className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-1 sm:p-2 shadow-lg hover:bg-gray-100"
                         >
-                          <ChevronRight className="h-6 w-6 text-gray-600" />
+                          <ChevronRight className="h-4 w-4 sm:h-6 sm:w-6 text-gray-600" />
                         </button>
                       </>
                     )}
@@ -370,7 +420,7 @@ export default function Dashboard() {
                       <button
                         key={index}
                         onClick={() => setCurrentImageIndex(index)}
-                        className={`w-2 h-2 rounded-full ${
+                        className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${
                           currentImageIndex === index ? 'bg-blue-600' : 'bg-gray-300'
                         }`}
                       />
@@ -384,19 +434,19 @@ export default function Dashboard() {
 
         {/* Monthly Goal Edit Modal */}
         {isEditingGoal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Set Monthly Goal</h2>
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md">
+              <div className="flex justify-between items-center mb-4 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Set Monthly Goal</h2>
                 <button
                   onClick={() => setIsEditingGoal(false)}
                   className="text-gray-500 hover:text-gray-700 transform hover:scale-110 transition-transform duration-200"
                 >
-                  <X className="h-6 w-6" />
+                  <X className="h-5 w-5 sm:h-6 sm:w-6" />
                 </button>
               </div>
 
-              <form onSubmit={handleUpdateGoal} className="space-y-6">
+              <form onSubmit={handleUpdateGoal} className="space-y-4 sm:space-y-6">
                 <div>
                   <label htmlFor="monthlyGoal" className="block text-sm font-medium text-gray-700 mb-2">
                     Monthly Savings Goal (₹)
@@ -417,18 +467,18 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="flex space-x-4">
+                <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
                   <button
                     type="button"
                     onClick={() => setIsEditingGoal(false)}
-                    className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+                    className="w-full px-4 py-3 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isUpdatingGoal}
-                    className="flex-1 px-4 py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isUpdatingGoal ? 'Updating...' : 'Update Goal'}
                   </button>
