@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import AddExpense from './pages/AddExpense';
+import ViewExpenses from './pages/ViewExpenses'; // Import your View Expenses component
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -16,8 +17,11 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          
+          {/* Private Routes */}
           <Route
             path="/"
             element={
@@ -31,6 +35,14 @@ function App() {
             element={
               <PrivateRoute>
                 <AddExpense />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/view-expenses"
+            element={
+              <PrivateRoute>
+                <ViewExpenses />
               </PrivateRoute>
             }
           />
